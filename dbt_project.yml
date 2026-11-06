@@ -1,0 +1,29 @@
+name: lab
+version: "1.0.0"
+profile: lab
+config-version: 2
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+snapshot-paths: ["snapshots"]
+seed-paths: ["seeds"]
+analysis-paths: ["analyses"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  lab:
+    shopify_dataform_migration:
+      +schema: shopify_dataform_migration
+
+snapshots:
+  lab:
+    +schema: snapshots          # dbt >= 1.9: schema (not target_schema), so it follows generate_schema_name
+
+seeds:
+  lab:
+    +schema: seeds
+
+vars:
+  # the business's "today" for the practice data; models use it instead of current_date so answers are stable
+  as_of_date: "2026-10-31"

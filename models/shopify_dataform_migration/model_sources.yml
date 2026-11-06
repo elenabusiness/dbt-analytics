@@ -1,0 +1,32 @@
+sources:
+  - name: shopify_source
+    database: raw
+    schema: shopify
+    tables:
+      - name: ORDER
+        quoting:
+          identifier: true
+      - name: order_line
+      - name: refund
+      - name: order_line_refund
+      - name: transaction
+      - name: customer
+      - name: product_variant
+      - name: disputes
+      - name: order_shipping_line
+      - name: order_adjustment
+  - name: meta_ads_source
+    database: raw
+    schema: meta_ads
+    tables:
+      - name: basic_ad
+  - name: subscription_source
+    database: raw
+    schema: recharge
+    tables:
+      - name: subscriptions
+  - name: intelligems_source
+    database: raw
+    schema: intelligems
+    tables:
+      - name: intelligems_data_import_raw
