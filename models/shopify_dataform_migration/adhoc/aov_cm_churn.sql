@@ -3,10 +3,6 @@
   schema = 'staging',
   
   ) }}
-config {
-  type: "table",
-  schema: "adhoc"}
-
 with base_table as (
 select order_date, customer_id, order_id, order_name, sub_id, is_sub, sub_frequency, is_sub_churn_after_one_payment, is_first_order, days_after_first_order, orderline_revenue order_revenue, orderline_cogs order_cogs, orderline_fulfillment_cost order_fulfillment_cost, orderline_transaction_fee order_transaction_fee, orderline_price order_price
 from {{ ref('base_orderlines') }} 
@@ -29,29 +25,29 @@ from base_table
 select
 order_date
 ,count (distinct order_id) orders
-,count(distinct if (is_onetime_order, order_id, null)) onetime_orders
-,count(distinct if (is_sub_order, order_id, null)) subscription_orders
-,count(distinct if (is_mixed_order, order_id, null)) mixed_orders
+,count(distinct iff(is_onetime_order, order_id, null)) onetime_orders
+,count(distinct iff(is_sub_order, order_id, null)) subscription_orders
+,count(distinct iff(is_mixed_order, order_id, null)) mixed_orders
 
 ,sum(order_price) order_gross_sales
-,sum(if (is_onetime_order, order_price, null)) onetime_order_gross_sales
-,sum(if (is_sub_order, order_price, null)) subscription_order_gross_sales
-,sum(if (is_mixed_order, order_price, null)) mixed_order_gross_sales
+,sum(iff(is_onetime_order, order_price, null)) onetime_order_gross_sales
+,sum(iff(is_sub_order, order_price, null)) subscription_order_gross_sales
+,sum(iff(is_mixed_order, order_price, null)) mixed_order_gross_sales
 
 
 ,sum(order_revenue) order_revenue
-,sum(if (is_onetime_order, order_revenue, null)) onetime_order_revenue
-,sum(if (is_sub_order, order_revenue, null)) subscription_order_revenue
-,sum(if (is_mixed_order, order_revenue, null)) mixed_order_revenue
+,sum(iff(is_onetime_order, order_revenue, null)) onetime_order_revenue
+,sum(iff(is_sub_order, order_revenue, null)) subscription_order_revenue
+,sum(iff(is_mixed_order, order_revenue, null)) mixed_order_revenue
 
 ,count (distinct customer_id) customers
-,count (distinct if(is_first_order,customer_id,null)) new_customers
-,count (distinct if(not is_first_order,customer_id,null)) returning_customers
-,sum(if (is_first_order, order_revenue, null)) new_customers_order_revenue
-,sum(if (not is_first_order, order_revenue, null)) returning_customers_order_revenue
+,count (distinct iff(is_first_order,customer_id,null)) new_customers
+,count (distinct iff(not is_first_order,customer_id,null)) returning_customers
+,sum(iff(is_first_order, order_revenue, null)) new_customers_order_revenue
+,sum(iff(not is_first_order, order_revenue, null)) returning_customers_order_revenue
 
-,count(distinct if(is_sub and is_first_order, sub_id, null)) new_subscriptions
-,count(distinct if(is_sub and is_first_order and is_sub_churn_after_one_payment, sub_id, null)) new_subscriptions_churn_after_one_payment
+,count(distinct iff(is_sub and is_first_order, sub_id, null)) new_subscriptions
+,count(distinct iff(is_sub and is_first_order and is_sub_churn_after_one_payment, sub_id, null)) new_subscriptions_churn_after_one_payment
 
 ,sum(customer_order_revenue_first_60_days) new_customer_order_revenue_first_60_days
 ,sum(customer_order_cogs_first_60_days) new_customer_order_cogs_first_60_days
@@ -61,23 +57,23 @@ order_date
 
 from (select *
 
-,if(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
-,sum(if(days_after_first_order<=60, order_revenue, 0)) over (partition by customer_id) 
+,iff(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
+,sum(iff(days_after_first_order<=60, order_revenue, 0)) over (partition by customer_id) 
 ,null
 ) customer_order_revenue_first_60_days
 
-,if(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
-,sum(if(days_after_first_order<=60, order_cogs, 0)) over (partition by customer_id) 
+,iff(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
+,sum(iff(days_after_first_order<=60, order_cogs, 0)) over (partition by customer_id) 
 ,null
 ) customer_order_cogs_first_60_days
 
-,if(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
-,sum(if(days_after_first_order<=60, Order_fulfillment_cost, 0)) over (partition by customer_id) 
+,iff(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
+,sum(iff(days_after_first_order<=60, Order_fulfillment_cost, 0)) over (partition by customer_id) 
 ,null
 ) customer_order_fulfillment_cost_first_60_days
 
-,if(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
-,sum(if(days_after_first_order<=60, order_transaction_fee, 0)) over (partition by customer_id) 
+,iff(is_first_order and row_number() over (partition by order_id order by is_sub,sub_frequency,is_first_order,days_after_first_order,order_revenue,order_cogs,Order_fulfillment_cost,order_transaction_fee) = 1
+,sum(iff(days_after_first_order<=60, order_transaction_fee, 0)) over (partition by customer_id) 
 ,null
 ) customer_order_transaction_fee_first_60_days
 
@@ -89,7 +85,7 @@ group by order_date
 (select 
 date,
 sum(cost) cost
-from `stitch-data-296516.wf_dw.wf_ad_spent`
+from {{ref ('stg101_marketing_spend_by_date')}}
 group by date
 )
 

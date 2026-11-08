@@ -3,14 +3,10 @@
   schema = 'staging',
   
   ) }}
-config {
-  type: "table",
-  schema: "sales_staging"}
-
 with tests_arr as (
 select 
 customer_id
-,first_value(if(is_first_order,tests_arr,null)) over (partition by customer_id order by order_timestamp asc) tests_arr
+,first_value(iff(is_first_order,tests_arr,null)) over (partition by customer_id order by order_timestamp asc) tests_arr
 from {{ ref('base_orderlines') }}
 qualify row_number() over (partition by customer_id order by order_timestamp asc) = 1
 )

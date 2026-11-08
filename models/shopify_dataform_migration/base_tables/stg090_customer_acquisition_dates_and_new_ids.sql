@@ -17,7 +17,7 @@ where is_acquisition
 )
 
 select 
-* except (acquisition_date_rank)
+* exclude (acquisition_date_rank)
 ,acquisition_date date_from
-,ifnull(date_add(lead(acquisition_date) over (partition by customer_id order by acquisition_date_rank asc),interval -1 day),current_date) date_to
+,ifnull(dateadd(day,-1, lead(acquisition_date) over (partition by customer_id order by acquisition_date_rank asc)),current_date) date_to
 from acquisition_dates

@@ -19,11 +19,11 @@ from
 when sub_interval_unit='day' then 1
 when sub_interval_unit='week' then 7
 when sub_interval_unit='month' then 30
-end * cast (sub_interval_frequency as INT64) sub_frequency_days
+end * sub_interval_frequency::INT sub_frequency_days
 ,case 
 when nosub_interval_unit='day' then 1
 when nosub_interval_unit='week' then 7
 when nosub_interval_unit='month' then 30
-end * cast (nosub_interval_frequency as INT64) nosub_frequency_days
+end * nosub_interval_frequency::INT nosub_frequency_days
 from {{ ref('stg110_orderline_with_marketing_spend') }} 
 )

@@ -7,15 +7,12 @@
 with intelligems_test_names_clean as (
 select
 orderlines.* exclude (ig_test_group, test_group_id_note_attributes)
-,concat('IG - ', ifnull(coalesce(ig_names.test_name, ig_names_2.test_name), ig_test_group)) as ig_test_name
-,ifnull(coalesce(ig_names.variant_name, ig_names_2.variant_name), ig_test_group) as ig_variant_name
+,concat('IG - ', ifnull(ig_names_2.test_name, ig_test_group)) as ig_test_name
+,ifnull(ig_names_2.variant_name, ig_test_group) as ig_variant_name
 from {{ ref('stg020_orderline_klaviyo_tags') }} as orderlines
-left join {{ ref('stg0201_orderline_intelligems_tags') }} as ig_names
-  on orderlines.ig_test_group = ig_names.variant_id
 left join {{ ref('stg0201_orderline_intelligems_tags') }} as ig_names_2
   on orderlines.test_group_id_note_attributes = ig_names_2.variant_id
 )
-
 ,vwo_test_names_clean as (
 select * exclude (test_name_note_attributes, klaviyo_vwo_test_no, vwo_test_note_attributes)
 ,concat('IG - ', test_name_note_attributes) as test_name_note_attributes

@@ -26,6 +26,8 @@ cast (id as STRING) as order_id
 ,concat ('Second Name',email) second_name
 ,email
 ,referring_site source_url
+,'dog weight dummy' dog_weight
+,'dog size dummy' dog_size
 {# ,* exclude(id,name, order_number,customer_id) #}
 from  {{ source('shopify_source', 'ORDER') }}
 {# where order_id = '5800000000009' #}

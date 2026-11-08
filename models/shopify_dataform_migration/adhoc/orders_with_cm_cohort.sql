@@ -3,14 +3,10 @@
   schema = 'staging',
   
   ) }}
-config {
-  type: "table",
-  schema: "adhoc"}
-
 with base_table as
 (
 select 
-date_trunc (order_date,month) month
+date_trunc (month,order_date) month
 ,order_id, order_date, order_timestamp, customer_id, is_first_order, orderline_price gross_sales,orderline_transaction_fee transaction_fee, orderline_revenue revenue, orderline_cogs cogs, orderline_fulfillment_cost fulfillment_cost
 ,not max(is_sub) over (partition by order_id) is_onetime_order
 ,min(is_sub) over (partition by order_id) is_subscription_order
@@ -23,7 +19,7 @@ end order_type
 
 ,is_first_order is_new_customer
 ,not is_first_order is_returning_customer
-,if (is_first_order,'New Customers','Returning Customers') customer_type
+,iff(is_first_order,'New Customers','Returning Customers') customer_type
 
 ,days_after_first_order
 from {{ ref('base_orderlines') }} orders
@@ -68,7 +64,7 @@ month
 
 , base_table_with_marketing_spend as (
 select orders.* 
-,ifnull(safe_divide(if(is_first_order,ads_spend.cost,null),count(distinct if(is_first_order,customer_id,null)) over (partition by order_date)),0) marketing_spend_per_new_customer
+,ifnull(DIV0(iff(is_first_order,ads_spend.cost,null),count(distinct iff(is_first_order,customer_id,null)) over (partition by order_date)),0) marketing_spend_per_new_customer
 from base_table_order_agg orders
 left join {{ ref('stg101_marketing_spend_by_date') }} ads_spend
 on orders.order_date = ads_spend.date
@@ -84,37 +80,37 @@ select *
 
 from
 (select *
-,if(
-    is_first_order 
-    ,sum(if(days_after_first_order<=60, order_revenue, 0)) over (partition by customer_id) 
+,iff(
+    is_first_order
+    ,sum(iff(days_after_first_order<=60, order_revenue, 0)) over (partition by customer_id)
     ,null
 ) customer_order_revenue_first_60_days
 
-,if(
+,iff(
     is_first_order
-    ,sum(if(days_after_first_order<=60, order_cogs, 0)) over (partition by customer_id) 
+    ,sum(iff(days_after_first_order<=60, order_cogs, 0)) over (partition by customer_id)
     ,null
 ) customer_order_cogs_first_60_days
 
-,if(
+,iff(
     is_first_order
-    ,sum(if(days_after_first_order<=60, Order_fulfillment_cost, 0)) over (partition by customer_id) 
+    ,sum(iff(days_after_first_order<=60, Order_fulfillment_cost, 0)) over (partition by customer_id)
     ,null
 ) customer_order_fulfillment_cost_first_60_days
 
-,if(
+,iff(
     is_first_order
-    ,sum(if(days_after_first_order<=60, order_transaction_fee, 0)) over (partition by customer_id) 
+    ,sum(iff(days_after_first_order<=60, order_transaction_fee, 0)) over (partition by customer_id)
     ,null
 ) customer_order_transaction_fee_first_60_days
 from base_table_with_marketing_spend)
 )
 
 , cohort as (
-select * except (days_after_first_order)
-,date_diff(order_date,first_order_date,month) months_after_first_order
-,date_diff(order_date,first_order_date,week) weeks_after_first_order
-,date_diff(order_date,first_order_date,day) days_after_first_order
+select * EXCLUDE (days_after_first_order)
+,DATEDIFF(month, first_order_date, order_date) months_after_first_order
+,DATEDIFF(week, first_order_date, order_date) weeks_after_first_order
+,DATEDIFF(day, first_order_date, order_date) days_after_first_order
 from base_table_with_cm
 )
 

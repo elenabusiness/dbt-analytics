@@ -19,8 +19,7 @@ select *
 ,rank() over (partition by customer_id order by order_timestamp asc) = 1 is_first_order
 ,first_value(order_date) over(partition by customer_id order by order_timestamp asc) customer_first_order_date
 from
-(select * 
-except (customer_id,is_customer_retained,is_customer_with_rank_retained,is_first_order,customer_first_order_date)
+(select * exclude (customer_id,is_customer_retained,is_customer_with_rank_retained,is_first_order,customer_first_order_date)
 ,customer_id_with_acquisition_rank_temp customer_id
 ,is_customer_with_rank_retained is_retained_customer
 ,is_first_order is_first_order_original

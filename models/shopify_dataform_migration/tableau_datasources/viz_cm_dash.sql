@@ -3,11 +3,6 @@
   schema = 'staging',
   
   ) }}
-config {
-    type: "table",
-    schema: "tableau_datasources"
-}
-
 with base_metrics as (
 select 
 -- cm dash
@@ -33,14 +28,8 @@ customer_id
 ,is_first_order_original
 -- test 267 dash
 ,variant_title
-,fpv7discount
 
--- quiz dash
-,age
-,body_type
-,breed
-,dog_weight_from_questionnaire
-,has_joint_issues
+
 
 -- test 267 dash
 ,days15_after_first_order
@@ -78,17 +67,7 @@ from {{ ref('customer_ltv_cohort_order_line_level') }}
 
 ,offer_tubs as(
 select * 
-,case
-when (variant_title like '%rehabilitation%' or variant_title like '%preventative%') and fpv7discount = '50' then '1 Tub'
-when (variant_title like '%rehabilitation%' or variant_title like '%preventative%') and fpv7discount = '52' then '2 Tubs'
-when (variant_title like '%rehabilitation%' or variant_title like '%preventative%') and fpv7discount = '58' then '3 Tubs'
-when (variant_title like '%onetime%') and fpv7discount = '0' then '1 Tub'
-when (variant_title like '%onetime%') and fpv7discount = '5' then '2 Tubs'
-when (variant_title like '%onetime%') and fpv7discount = '10' then '3 Tubs'
-when (variant_title like '%onetime%') and fpv7discount = '15' then '4 Tubs'
-when (variant_title like '%onetime%') and fpv7discount = '20' then '5 Tubs'
-when (variant_title like '%onetime%') and fpv7discount = '25' then '6 Tubs'
-end offer_tubs
+
 from base_metrics
 )
 
@@ -97,13 +76,13 @@ from base_metrics
 -- ,array(select distinct vwo_variant from unnest(vwo_variant_arr) vwo_variant where vwo_variant is not null and vwo_variant != '1') vwo_variant_arr
 -- from (SELECT 
 -- *
--- ,if(vwo_variant = '1'
---   ,if(
+-- ,iff(vwo_variant = '1'
+--   ,iff(
 --     count(distinct vwo_variant) over (partition by vwo_test_no) = 0
 --     ,null
 --     ,array_agg(vwo_variant) over (partition by vwo_test_no)
 --   )
--- ,if(vwo_variant is null, null, [vwo_variant])
+-- ,iff(vwo_variant is null, null, [vwo_variant])
 -- ) vwo_variant_arr
 -- from offer_tubs
 -- where first_order_date >='2023-01-01' 
@@ -112,7 +91,7 @@ from base_metrics
 -- ,variant_as_arr_unnested as(
 -- select 
 -- * except (vwo_variant_arr,vwo_variant)
--- ,if(vwo_variant = '1', 'Control',vwo_variant) vwo_variant
+-- ,iff(vwo_variant = '1', 'Control',vwo_variant) vwo_variant
 -- from variant_as_arr
 -- left join unnest(vwo_variant_arr) vwo_variant_filter
 -- )

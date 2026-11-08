@@ -17,8 +17,8 @@ from
 ,orderline_refund_price + orderline_refund_taxes + orderline_adjustments_tax + orderline_adjustments_refund as orderline_total_refund
 ,least(orderline_refund_date, order_adjustment_refund_date) as refund_date
 from
-(select order_lines.* exclude (gateway, dog_weight_from_product, dog_size)
-,0.3 + 0.0215 * iff(gateway in ('shopify_installments', 'shopify_payments'), orderline_price, 0) as orderline_transaction_fee
+(select order_lines.* exclude (dog_weight_from_product, dog_size)
+,0.3 + 0.0215 * iff(source_name in ('shopify_installments', 'shopify_payments'), orderline_price, 0) as orderline_transaction_fee
 ,ifnull(cast(cogs.cogs as float), 0) * order_lines.orderline_quantity as orderline_cogs
 ,ifnull(fulfillment_cost.order_fulfillment_cost, 0) * orderline_share_in_order as orderline_fulfillment_cost
 ,ifnull(dog_weight.dog_weight_category, coalesce(order_lines.dog_weight_from_product, order_lines.dog_size)) as dog_weight_from_product
