@@ -1,0 +1,4 @@
+# install with the official constraints file (see the guide, step 6):
+apache-airflow==3.3.2
+astronomer-cosmos==1.16.0
+apache-airflow-providers-snowflake
