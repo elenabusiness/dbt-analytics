@@ -1,0 +1,28 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv-dbt/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.envFile": "${workspaceFolder}/.env",
+  "dbt.dbtPythonPathOverride": "${workspaceFolder}/.venv-dbt/bin/python",
+  "dbt.queryLimit": 100,
+  "dbt.profilesDirOverride": "${workspaceFolder}",
+  "dbt.dbtMajorVersion": "v1",
+  "dbt.lineage.defaultExpansion": 10,
+  "files.associations": {
+    "*.sql": "jinja-sql",
+    "**/models/**/*.yml": "jinja-yaml"
+  },
+  "files.exclude": { "**/.venv-*": true, "**/__pycache__": true },
+  "search.exclude": {
+    "**/dbt_packages": true,
+    "**/target": true,
+    "airflow/logs": true
+  },
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "models/.*\\.sql$",
+        "cmd": "cd ${workspaceFolder} && source ${workspaceFolder}/.venv-dbt/bin/activate && source ${workspaceFolder}/.env 2>/dev/null && dbt compile -s ${fileBasenameNoExt}"
+      }
+    ]
+  }
+}
