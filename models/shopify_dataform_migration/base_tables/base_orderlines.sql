@@ -6,5 +6,6 @@
 
 select *
 ,'dummy' dummy_chane_column
-,'dummy' dummy_chane_column_@
+,'dummy' dummy_fix_column1
+
 FROM {{ ref('stg150_orderline_customer_transformations') }} order_lines

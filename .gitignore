@@ -1,5 +1,5 @@
 .env
-.venv-dbt/
+.venv-*/
 target/
 dbt_packages/
 logs/
@@ -7,3 +7,14 @@ logs/
 .DS_Store
 profiles.yml
 dbt_internal_packages/
+airflow/airflow.db*
+airflow/simple_auth_manager_passwords.json.generated
+airflow/logs/
+airflow/dags/__pycache__/
+data/raw/
+legacy_dataform/*
+!legacy_dataform/README.md
+scripts/__pycache__/
+*.p8
+*.pem
+__pycache__/
