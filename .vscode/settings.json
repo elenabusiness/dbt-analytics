@@ -1,8 +1,8 @@
 {
-  "python.defaultInterpreterPath": "${workspaceFolder}/.venv-dbt/bin/python",
+  "python.defaultInterpreterPath": "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
   "python.terminal.activateEnvironment": true,
   "python.envFile": "${workspaceFolder}/.env",
-  "dbt.dbtPythonPathOverride": "${workspaceFolder}/.venv-dbt/bin/python",
+  "dbt.dbtPythonPathOverride": "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
   "dbt.queryLimit": 100,
   "dbt.profilesDirOverride": "${workspaceFolder}",
   "dbt.dbtMajorVersion": "v1",
@@ -21,7 +21,7 @@
     "commands": [
       {
         "match": "models/.*\\.sql$",
-        "cmd": "cd ${workspaceFolder} && source ${workspaceFolder}/.venv-dbt/bin/activate && source ${workspaceFolder}/.env 2>/dev/null && dbt compile -s ${fileBasenameNoExt}"
+        "cmd": "cd ${workspaceFolder} && source ${workspaceFolder}/.env 2>/dev/null && dbt compile -s ${fileBasenameNoExt}"
       }
     ]
   }
