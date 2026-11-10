@@ -7,8 +7,8 @@
 with sub_ids as(
   select  
   distinct 
-  customer_id recharge_customer_id
-  ,customer_id shopify_customer_id
+  customer_id::string recharge_customer_id
+  ,customer_id::string shopify_customer_id
   ,external_product_id:ecommerce::string shopify_order_id
   ,id::string sub_id
   ,external_variant_id:ecommerce::string shopify_variant_id 

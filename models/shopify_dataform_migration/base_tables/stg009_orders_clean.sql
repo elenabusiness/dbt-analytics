@@ -14,7 +14,7 @@ cast (id as STRING) as order_id
 ,cast (name as string) as order_name
 ,cast (order_number as string) as order_number
 ,least(created_at, processed_at, updated_at) order_timestamp
-,cast (customer_id as string) as customer_id
+,coalesce(cast(customer_id as string), md5(lower(trim(email)))) as customer_id
 ,cast(subtotal_price as FLOAT) subtotal_price
 ,cast(total_discounts as FLOAT) total_discounts
 ,cast(total_tax as FLOAT) order_tax
