@@ -9,7 +9,6 @@ env:
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
   SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
   SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
-  SNOWFLAKE_PRIVATE_KEY_PATH: ~/.dbt/snowflake_key.pem
 
 jobs:
   dbt-run:
@@ -28,8 +27,9 @@ jobs:
         run: |
           mkdir -p ~/.dbt
           cp profiles.yml ~/.dbt/profiles.yml
-          echo "$SNOWFLAKE_PRIVATE_KEY" > ~/.dbt/snowflake_key.pem
-          chmod 600 ~/.dbt/snowflake_key.pem
+          echo "$SNOWFLAKE_PRIVATE_KEY" > "$HOME/.dbt/snowflake_key.pem"
+          chmod 600 "$HOME/.dbt/snowflake_key.pem"
+          echo "SNOWFLAKE_PRIVATE_KEY_PATH=$HOME/.dbt/snowflake_key.pem" >> "$GITHUB_ENV"
 
       - name: Install packages
         run: dbt deps
