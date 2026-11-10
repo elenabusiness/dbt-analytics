@@ -15,6 +15,10 @@ models:
   lab:
     shopify_dataform_migration:
       +schema: shopify_dataform_migration
+      tableau_datasources:
+        +schema: tableau_datasources
+      viz_test_attribution_tool:
+        +schema: tableau_datasources
 
 snapshots:
   lab:
