@@ -1,0 +1,41 @@
+name: dbt Scheduled Run
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # Daily at 6am UTC
+  workflow_dispatch: {}   # Allow manual trigger
+
+env:
+  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+  SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+  SNOWFLAKE_PRIVATE_KEY_PATH: ~/.dbt/snowflake_key.pem
+
+jobs:
+  dbt-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt
+        run: pip install dbt-snowflake
+
+      - name: Write private key file
+        run: |
+          mkdir -p ~/.dbt
+          echo "$SNOWFLAKE_PRIVATE_KEY" > ~/.dbt/snowflake_key.pem
+          chmod 600 ~/.dbt/snowflake_key.pem
+
+      - name: Install packages
+        run: dbt deps --profiles-dir .
+
+      - name: dbt build (prod)
+        run: dbt build --target prod --profiles-dir .
+
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.dbt/snowflake_key.pem
