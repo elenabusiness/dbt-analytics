@@ -22,20 +22,21 @@ jobs:
           python-version: "3.11"
 
       - name: Install dbt
-        run: pip install dbt-snowflake
+        run: pip install dbt-snowflake==1.12.5
 
-      - name: Write private key file
+      - name: Set up dbt profile and key
         run: |
           mkdir -p ~/.dbt
+          cp profiles.yml ~/.dbt/profiles.yml
           echo "$SNOWFLAKE_PRIVATE_KEY" > ~/.dbt/snowflake_key.pem
           chmod 600 ~/.dbt/snowflake_key.pem
 
       - name: Install packages
-        run: dbt deps --profiles-dir .
+        run: dbt deps
 
       - name: dbt build (prod)
-        run: dbt build --target prod --profiles-dir .
+        run: dbt build --target prod
 
-      - name: Clean up key
+      - name: Clean up secrets
         if: always()
-        run: rm -f ~/.dbt/snowflake_key.pem
+        run: rm -f ~/.dbt/snowflake_key.pem ~/.dbt/profiles.yml
