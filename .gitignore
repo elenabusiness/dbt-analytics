@@ -5,6 +5,7 @@ dbt_packages/
 logs/
 .user.yml
 .DS_Store
+profiles.yml
 dbt_internal_packages/
 airflow/airflow.db*
 airflow/simple_auth_manager_passwords.json.generated
