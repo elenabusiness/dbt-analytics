@@ -1,6 +1,5 @@
 {{ config(
   materialized='table',
-  schema = 'staging',
   
   ) }}
 with base_metrics as (
