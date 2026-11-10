@@ -1,6 +1,5 @@
 {{ config(
   materialized='table',
-  schema = 'staging',
   
   ) }}
 -- -- select customer_id, order_date, order_name, order_id, test_no vwo_test_no, test_variant vwo_variant, vwo_test_original, vwo_variant_original
