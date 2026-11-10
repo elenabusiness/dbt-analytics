@@ -1,0 +1,81 @@
+models:
+  # ── base layer ──────────────────────────────────────────────
+  - name: stg009_orders_clean
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: order_name
+        tests:
+          - unique
+          - not_null
+
+  - name: stg010_orderline_clean
+    columns:
+      - name: orderline_id
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg009_orders_clean')
+              field: order_id
+
+  - name: stg021_subscription_base
+    columns:
+      - name: sub_id
+        tests:
+          - not_null
+
+  - name: stg060_orderline_enhanced
+    columns:
+      - name: orderline_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg101_marketing_spend_by_date
+    columns:
+      - name: date
+        tests:
+          - unique
+          - not_null
+
+  - name: stg150_orderline_customer_transformations
+    columns:
+      - name: orderline_id
+        tests:
+          - unique
+          - not_null
+
+  # ── output layer ────────────────────────────────────────────
+  - name: base_orderlines
+    columns:
+      - name: orderline_id
+        tests:
+          - unique
+          - not_null
+
+  - name: customer_churn_cohort
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+      - name: date
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - customer_id
+            - date
+
+  - name: customer_ltv_cohort_order_line_level
+    columns:
+      - name: orderline_id
+        tests:
+          - unique
+          - not_null
