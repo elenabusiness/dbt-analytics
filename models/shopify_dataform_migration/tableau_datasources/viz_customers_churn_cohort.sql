@@ -1,6 +1,5 @@
 {{ config(
   materialized='table',
-  schema = 'staging',
   
   ) }}
 -- with variant_as_arr as (
