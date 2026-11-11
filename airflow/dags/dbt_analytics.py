@@ -1,17 +1,13 @@
-"""shop_pipeline: load the raw files into Snowflake, then build the dbt project, every model its own task.
+"""dbt_analytics: build the dbt project, every model its own task, then run snapshots.
 
-    load_raw  ->  dbt (Cosmos task group: one run task + one test task per model, in dependency order)
-              ->  dbt_snapshot
+    dbt (Cosmos task group: one run task + one test task per model, in dependency order)
+      ->  dbt_snapshot
 
 Cosmos reads the dbt project and turns it into Airflow tasks, so a failed model shows up as one red box you can
 retry on its own instead of re-running the whole `dbt build`. dbt runs from its own virtualenv (.venv-dbt), which
 keeps dbt's and Airflow's dependencies from fighting.
-
-Everything it needs comes from the environment you start Airflow in (source .env first): no Airflow
-Connection is required for this lab. Exercise 4.x asks you to move it to one.
 """
 import os
-import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -25,7 +21,7 @@ DBT_BIN = REPO / ".venv-dbt" / "bin" / "dbt"
 
 
 @dag(
-    dag_id="shop_pipeline",
+    dag_id="dbt_analytics",
     schedule="0 6 * * *",                 # 06:00 UTC daily
     start_date=datetime(2026, 11, 1),
     catchup=False,                         # exercise: what would catchup=True do on first unpause?
@@ -33,13 +29,7 @@ DBT_BIN = REPO / ".venv-dbt" / "bin" / "dbt"
     default_args={"retries": 1, "retry_delay": timedelta(minutes=2)},
     tags=["lab", "dbt", "snowflake"],
 )
-def shop_pipeline():
-
-    @task
-    def load_raw():
-        sys.path.insert(0, str(REPO / "scripts"))
-        import load_raw as loader
-        loader.run()
+def dbt_analytics():
 
     dbt = DbtTaskGroup(
         group_id="dbt",
@@ -63,7 +53,7 @@ def shop_pipeline():
     def dbt_snapshot():
         return f"{DBT_BIN} snapshot"
 
-    load_raw() >> dbt >> dbt_snapshot()
+    dbt >> dbt_snapshot()
 
 
-shop_pipeline()
+dbt_analytics()
