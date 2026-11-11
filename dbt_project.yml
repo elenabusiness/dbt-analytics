@@ -12,6 +12,8 @@ analysis-paths: ["analyses"]
 clean-targets: ["target", "dbt_packages"]
 
 models:
+  dbt_project_evaluator:
+    +enabled: "{{ env_var('DBT_CLOUD_PR_ID', '') == '' }}"
   lab:
     shopify_dataform_migration:
       +schema: shopify_dataform_migration
