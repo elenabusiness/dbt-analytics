@@ -44,7 +44,7 @@ def dbt_analytics():
             dbt_executable_path=DBT_BIN,             # without it Cosmos reads the graph with the first dbt on PATH
             invocation_mode=InvocationMode.SUBPROCESS,  # dbt lives in .venv-dbt, not in Airflow's environment
             test_behavior=TestBehavior.AFTER_EACH,   # each model's tests run right after it
-            exclude=["resource_type:snapshot"],
+            exclude=["resource_type:snapshot", "package:dbt_project_evaluator"],
         ),
         operator_args={"install_deps": True},
     )
