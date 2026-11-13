@@ -8,6 +8,10 @@ logs/
 profiles.yml
 dbt_internal_packages/
 airflow/airflow.db*
+airflow/airflow-*.pid
+airflow/airflow-*.out
+airflow/airflow-*.err
+airflow/airflow-*.log
 airflow/simple_auth_manager_passwords.json.generated
 airflow/logs/
 airflow/dags/__pycache__/
